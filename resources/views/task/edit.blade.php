@@ -1,12 +1,33 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+
+            html, body{
+                background-color: #fff;
+                color: #636b6f;
+                font-family: 'Raleway';
+                font-weight: 100;
+                height: 80vh;
+                margin: 0;
+            }
+</style>
+<style>
+            .card-header
+            {
+                background-color: #fff;
+                color: #636b6f;
+                font-family: 'Raleway';
+                font-weight: 100;
+            }
+        </style>
+
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
                 <center>
-            <h3>    <div class="card-header">{{ __('Edytuj nazwę projektu') }}</div> </h3>
+            <h3>    <div class="card-header">{{ __('Edytuj projekt') }}</div> </h3>
                  </center>
                 <div class="card-body">
                 @if (count($errors) > 0)
@@ -35,7 +56,20 @@
                             </div>
                         </div>
                     
+                        <div class="form-group row">
+                            <label for="date" class="col-md-4 col-form-label text-md-right">{{ __('Data:') }}</label>
 
+                            <div class="col-md-6">
+                         
+<input type = "date" name="date" class="form-control" value="{{$task->date}}" placeholder = "Uzupełnij datę projektu" />
+
+                                @error('date')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
 
                   
 <br>

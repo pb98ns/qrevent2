@@ -14,13 +14,15 @@ class UserController extends Controller
     public function __construct(){
         $this->middleware('auth');
     }
-    public function index(){
+    public function index(UserRepository $userRepo){
         if(Auth::user()->permissions != 'Administrator' ){
             return redirect()->route('login');
         }
+        $usernieaktywny = $userRepo->getAllUsersznieaktywnych();
+        $useraktywny = $userRepo->getAllUsersbeznieaktywnych();
         $users=User::orderBy('surname','asc')->get(); 
           
-                return View('auth.register',["pracownicylist"=>$users]);
+                return View('auth.register',["pracownicylist"=>$users], compact('usernieaktywny', 'useraktywny'));
             }
             public function show($id){
                 if(Auth::user()->permissions != 'Administrator' ){
@@ -83,5 +85,10 @@ public function update(Request $request, $id)
     
     $user ->save();
     return redirect()->action('UserController@index');
+}
+public function index2()
+{
+    
+    return view('welcome');
 }
 }

@@ -23,6 +23,9 @@ class VacationController extends Controller
         $this->middleware('auth');
     }
     public function index(){
+        if(Auth::user()->permissions != 'Administrator' && Auth::user()->permissions != 'Pracownik'){
+            return redirect()->route('permissions');
+        }
         $today2 = date('Y-01-01');
         $today3 = date('Y-12-31');
         $auth_user_id = Auth::id();
@@ -34,6 +37,9 @@ class VacationController extends Controller
 return View('vacation.list', compact('vacations','today2','today3','vacationscount','vacations_ch','vacationscount_ch'));
 }
 public function index2(){
+    if(Auth::user()->permissions != 'Administrator'){
+        return redirect()->route('login');
+    }
     $start_date = date('Y-m-d');
     $today = date('Y-m-d');
     $today2 = date('Y-01-01');
@@ -42,9 +48,9 @@ public function index2(){
                     $variable7=$today3;
                     session()->put('variable6', $variable6);
                     session()->put('variable7', $variable7);
-    $vacations=Vacation::join('users','vacations.user_id','=','users.id')->where("vacation_date", "=", $today)->orderBy('users.surname', "asc")->get(); 
-    $vacations_uw=Vacation::join('users','vacations.user_id','=','users.id')->select("vacations.*",DB::raw("count(`user_id`) as czas"))->where("type_vacation", "=", "UW")->whereBetween('vacation_date', [$today2, $today3])->groupBy('user_id')->get(); 
-    $vacations_ch=Vacation::join('users','vacations.user_id','=','users.id')->select("vacations.*",DB::raw("count(`user_id`) as czas"))->where("type_vacation", "=", "CH")->whereBetween('vacation_date', [$today2, $today3])->groupBy('user_id')->get(); 
+    $vacations=Vacation::join('users','vacations.user_id','=','users.id')->where("users.permissions", "!=", "Nieaktywny")->where("vacation_date", "=", $today)->orderBy('users.surname', "asc")->get(); 
+    $vacations_uw=Vacation::join('users','vacations.user_id','=','users.id')->select("vacations.*",DB::raw("count(`user_id`) as czas"))->where("users.permissions", "!=", "Nieaktywny")->where("type_vacation", "=", "UW")->whereBetween('vacation_date', [$today2, $today3])->orderBy('users.surname', 'asc')->groupBy('user_id')->get(); 
+    $vacations_ch=Vacation::join('users','vacations.user_id','=','users.id')->select("vacations.*",DB::raw("count(`user_id`) as czas"))->where("users.permissions", "!=", "Nieaktywny")->where("type_vacation", "=", "CH")->whereBetween('vacation_date', [$today2, $today3])->orderBy('users.surname', 'asc')->groupBy('user_id')->get(); 
 
 return View('vacation.vacation', compact('vacations','today','vacations_uw','vacations_ch','today2','today3'));
 }
@@ -140,9 +146,9 @@ public function searchvacation(Request $request)
                                     $today2=$request->input('start_date2');
                                     $today3=$request->input('end_date2');
 
-                  $vacations=Vacation::join('users','vacations.user_id','=','users.id')->where("vacation_date", "=", $today)->orderBy('users.surname', "asc")->get(); 
-                    $vacations_uw=Vacation::join('users','vacations.user_id','=','users.id')->select("vacations.*",DB::raw("count(`user_id`) as czas"))->where("type_vacation", "=", "UW")->whereBetween('vacation_date', [$start_date, $end_date])->groupBy('user_id')->get(); 
-                    $vacations_ch=Vacation::join('users','vacations.user_id','=','users.id')->select("vacations.*",DB::raw("count(`user_id`) as czas"))->where("type_vacation", "=", "CH")->whereBetween('vacation_date', [$start_date, $end_date])->groupBy('user_id')->get(); 
+                  $vacations=Vacation::join('users','vacations.user_id','=','users.id')->where("users.permissions", "!=", "Nieaktywny")->where("vacation_date", "=", $today)->orderBy('users.surname', "asc")->get(); 
+                    $vacations_uw=Vacation::join('users','vacations.user_id','=','users.id')->select("vacations.*",DB::raw("count(`user_id`) as czas"))->where("users.permissions", "!=", "Nieaktywny")->where("type_vacation", "=", "UW")->whereBetween('vacation_date', [$start_date, $end_date])->orderBy('surname', 'asc')->groupBy('user_id')->get(); 
+                    $vacations_ch=Vacation::join('users','vacations.user_id','=','users.id')->select("vacations.*",DB::raw("count(`user_id`) as czas"))->where("users.permissions", "!=", "Nieaktywny")->where("type_vacation", "=", "CH")->whereBetween('vacation_date', [$start_date, $end_date])->orderBy('surname', 'asc')->groupBy('user_id')->get(); 
                     $variable6=$start_date;
                     $variable7=$end_date;
                     session()->put('variable6', $variable6);

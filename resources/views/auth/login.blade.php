@@ -1,5 +1,25 @@
 @extends('layouts.app')
 @section('content')
+<style>
+
+            html, body{
+                background-color: #fff;
+                color: #636b6f;
+                font-family: 'Raleway';
+                font-weight: 100;
+                height: 80vh;
+                margin: 0;
+            }
+</style>
+<style>
+            .card-header
+            {
+                background-color: #fff;
+                color: #636b6f;
+                font-family: 'Raleway';
+                font-weight: 100;
+            }
+        </style>
 <div class="container">
 
 
@@ -7,7 +27,7 @@
         <div class="col-md-8">
             <div class="card">
 <center>
-               <h3> <div class="card-header">{{ __('System rejestracji czasu pracy') }}</div></h3>
+               <h3> <div class="card-header">{{ __('QR event') }}</div></h3>
 </center>
                 <div class="card-body">
                     <form method="POST" action="{{ route('login') }}">
@@ -41,29 +61,14 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <div class="col-md-6 offset-md-4">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-
-                                    <label class="form-check-label" for="remember">
-                                        {{ __('Zapamiętaj mnie') }}
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
                         <br>
                         <div class="form-group row mb-0">
-                            <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
+                        <div class="form-group mb-3 text-center">
+                                <button type="submit" class="btn btn-secondary btn-lg">
                                     {{ __('Zaloguj się') }}
                                 </button>
 
-                                @if (Route::has('password.request'))
-                                    <a class="btn btn-link" href="{{ route('password.request') }}">
-                                        {{ __('Nie pamiętasz hasła?') }}
-                                    </a>
-                                @endif
+                            
                             </div>
                         </div>
                     </form>

@@ -11,6 +11,11 @@ class Firm extends Model
         'name',
         'place',
         'nip',
+        'status',
+        'kpir',
+        'kh',
+        'placezus',
+        'amortyzacja'
     ];
     public $timestamps = false;
 }

@@ -11,8 +11,16 @@ class FirmRepository extends BaseRepository{
     }
     public function getAllFirms()
     {
-        return $this->model->all();
+        return $this->model->orderBy('name', 'asc')->get();
     }
-   
+    public function getAllFirmsActive()
+    {
+        return $this->model->where('status','=','Aktywny')->orderBy('name', 'asc')->get();
+    }
+    public function getAllFirmsNoActive()
+    {
+        return $this->model->where('status','=','Nieaktywny')->orderBy('name', 'asc')->get();
+    
+}
 }
 ?>

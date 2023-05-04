@@ -28,14 +28,12 @@ class ProjectController extends Controller
         if(Auth::user()->permissions != 'Administrator'){
             return redirect()->route('login');
         }
-    
-       $all=Project::join('users','projects.user_id','=','users.id')->select('users.*', 'projects.*')->orderBy('date','desc')->orderBy('surname', 'asc')->get();
-       $all10=0;
-
-       $user = $userRepo->getAllUsers();
-       $firm = $firmRepo->getAllFirms();
+       
+       
+       $user = $userRepo->getAllUsersbeznieaktywnych();
+       $firm = $firmRepo->getAllFirmsActive();
        $task = $taskRepo->getAllTasks();
-                return View('project.list',compact('all','user','task','firm','all10'));
+                return View('project.list', compact('user','task','firm'));
             }
             public function edit($id, UserRepository $userRepo, TaskRepository $taskRepo, FirmRepository $firmRepo)
             {
@@ -186,35 +184,42 @@ class ProjectController extends Controller
                 $today=date('Y-m-d');
                 
                
-                $all=Project::join('users','projects.user_id','=','users.id')
+                $all=Project::join('users','projects.user_id','=','users.id')->join('firms','projects.firm_id','=','firms.id')
                 ->select("users.*", "projects.*", DB::raw("sec_to_time (sum(time_to_sec(`time`))) as czas"))
                 ->where("projects.date", "=", $today)
+                ->where("users.permissions", "!=", "Nieaktywny")
                 ->groupBy('user_id')
                 ->get();
 
-                $user1=Project::join('users','projects.user_id','=','users.id')
+                $user1=Project::join('users','projects.user_id','=','users.id')->join('firms','projects.firm_id','=','firms.id')
                 ->select("projects.user_id")
                 ->where("projects.date", "=", $today)
+                ->where("users.permissions", "!=", "Nieaktywny")
                 ->groupBy("user_id")
                 ->get();
 
-                $all2=Project::join('users','projects.user_id','=','users.id')
+                $all2=Project::join('users','projects.user_id','=','users.id')->join('firms','projects.firm_id','=','firms.id')
                 ->select("users.*", "projects.*")
+                ->where("users.permissions", "!=", "Nieaktywny")
                 ->whereNotIn('projects.user_id', $user1)
                 ->groupBy('user_id')
                 ->orderBy('users.surname', "asc")
                 ->get();
 
                 
-                $firm1=Project::join('firms','projects.firm_id','=','firms.id')
+                $firm1=Project::join('firms','projects.firm_id','=','firms.id')->join('users','projects.user_id','=','users.id')
                 ->select("projects.firm_id")
                 ->where("projects.date", "=", $today)
+                ->where("users.permissions", "!=", "Nieaktywny")
+                ->where("firms.status", "!=", "Nieaktywny")
                 ->groupBy("firm_id")
                 ->orderBy('firms.name', "asc")
                 ->get();
 
-                $allfirm2=Project::join('firms','projects.firm_id','=','firms.id')
+                $allfirm2=Project::join('firms','projects.firm_id','=','firms.id')->join('users','projects.user_id','=','users.id')
                 ->select("firms.*", "projects.*")
+                ->where("users.permissions", "!=", "Nieaktywny")
+                ->where("firms.status", "!=", "Nieaktywny")
                 ->whereNotIn('projects.firm_id', $firm1)
                 ->groupBy('firm_id')
                 ->orderBy('firms.name', "asc")
@@ -222,21 +227,37 @@ class ProjectController extends Controller
 
             
 
-                $allfirm=Project::join('firms','projects.firm_id','=','firms.id')
+                $allfirm=Project::join('firms','projects.firm_id','=','firms.id')->join('users','projects.user_id','=','users.id')
                 ->select("firms.*", "projects.*", DB::raw("sec_to_time (sum(time_to_sec(`time`))) as czas2"))
                 ->where("projects.date", "=", $today)
+                
+                ->where("firms.status", "!=", "Nieaktywny")
+                ->orderBy('firms.name', "asc")
                 ->groupBy('firm_id')
                 ->get();
 
                 $suma=DB::table("projects")
+                ->join('users','projects.user_id','=','users.id')
+                ->join('firms','projects.firm_id','=','firms.id')
                 ->select(DB::raw("sec_to_time (sum(time_to_sec(`time`))) as czas3"))
                 ->where("projects.date", "=", $today)
+                ->where("users.permissions", "!=", "Nieaktywny")
+              
                 ->get();
-                $user = $userRepo->getAllUsers();
-                $firm = $firmRepo->getAllFirms();
+
+                $suma10=DB::table("projects")
+                ->join('users','projects.user_id','=','users.id')
+                ->join('firms','projects.firm_id','=','firms.id')
+                ->select(DB::raw("sec_to_time (sum(time_to_sec(`time`))) as czas3"))
+                ->where("projects.date", "=", $today)
+               
+                ->where("firms.status", "!=", "Nieaktywny")
+                ->get();
+                $user = $userRepo->getAllUsersbeznieaktywnych();
+                $firm = $firmRepo->getAllFirmsActive();
 
                $user = $userRepo->getAllUsers();
-                        return View('project.day',compact('all','user', 'today','all2','firm','allfirm','allfirm2','suma'));
+                        return View('project.day',compact('all','user', 'today','all2','firm','allfirm','allfirm2','suma','suma10'));
                     }
 
 
@@ -249,41 +270,48 @@ class ProjectController extends Controller
                 }
                 $today=$request->input('start_date');
                
-                $user1=Project::join('users','projects.user_id','=','users.id')
+                $user1=Project::join('users','projects.user_id','=','users.id')->join('firms','projects.firm_id','=','firms.id')
                 ->select("projects.user_id")
                 ->where("projects.date", "=", $start_date)
+                ->where("users.permissions", "!=", "Nieaktywny")
                 ->groupBy("user_id")
                 ->orderBy('users.surname', "asc")
                 ->get();
 
-                $all2=Project::join('users','projects.user_id','=','users.id')
+                $all2=Project::join('users','projects.user_id','=','users.id')->join('firms','projects.firm_id','=','firms.id')
                 ->select("users.*", "projects.*")
                 ->whereNotIn('projects.user_id', $user1)
+                ->where("users.permissions", "!=", "Nieaktywny")
                 ->groupBy('user_id')
                 ->orderBy('users.surname', "asc")
                 ->get();
 
             
 
-                $all=Project::join('users','projects.user_id','=','users.id')
+                $all=Project::join('users','projects.user_id','=','users.id')->join('firms','projects.firm_id','=','firms.id')
                 ->select("users.*", "projects.*", DB::raw("sec_to_time (sum(time_to_sec(`time`))) as czas"))
                 ->where("projects.date", "=", $start_date)
+                ->where("users.permissions", "!=", "Nieaktywny")
                 ->groupBy('user_id')
+                ->orderBy('users.surname', "asc")
                 ->get();
 
                 
 
 
 
-                $firm1=Project::join('firms','projects.firm_id','=','firms.id')
+                $firm1=Project::join('firms','projects.firm_id','=','firms.id')->join('users','projects.user_id','=','users.id')
                 ->select("projects.firm_id")
                 ->where("projects.date", "=", $start_date)
+                ->where("users.permissions", "!=", "Nieaktywny")
                 ->groupBy("firm_id")
                 ->orderBy('firms.name', "asc")
                 ->get();
 
-                $allfirm2=Project::join('firms','projects.firm_id','=','firms.id')
+                $allfirm2=Project::join('firms','projects.firm_id','=','firms.id')->join('users','projects.user_id','=','users.id')
                 ->select("firms.*", "projects.*")
+                ->where("users.permissions", "!=", "Nieaktywny")
+                ->where("firms.status", "!=", "Nieaktywny")
                 ->whereNotIn('projects.firm_id', $firm1)
                 ->groupBy('firm_id')
                 ->orderBy('firms.name', "asc")
@@ -291,23 +319,36 @@ class ProjectController extends Controller
 
             
 
-                $allfirm=Project::join('firms','projects.firm_id','=','firms.id')
+                $allfirm=Project::join('firms','projects.firm_id','=','firms.id')->join('users','projects.user_id','=','users.id')
                 ->select("firms.*", "projects.*", DB::raw("sec_to_time (sum(time_to_sec(`time`))) as czas2"))
                 ->where("projects.date", "=", $start_date)
+                
+                ->where("firms.status", "!=", "Nieaktywny")
                 ->groupBy('firm_id')
+                ->orderBy('firms.name', "asc")
                 ->get();
 
                 $user = $userRepo->getAllUsers();
                 $firm = $firmRepo->getAllFirms();
 
                 $suma=DB::table("projects")
+                ->join('users','projects.user_id','=','users.id')
+                ->join('firms','projects.firm_id','=','firms.id')
                 ->select(DB::raw("sec_to_time (sum(time_to_sec(`time`))) as czas3"))
+                ->where("users.permissions", "!=", "Nieaktywny")
                 ->where("projects.date", "=", $start_date)
                 ->get();
 
+                $suma10=DB::table("projects")
+                ->join('users','projects.user_id','=','users.id')
+                ->join('firms','projects.firm_id','=','firms.id')
+                ->select(DB::raw("sec_to_time (sum(time_to_sec(`time`))) as czas3"))
                 
+                ->where("firms.status", "!=", "Nieaktywny")
+                ->where("projects.date", "=", $start_date)
+                ->get();
               
-                return View('project.day',compact('all','user','today','all2','allfirm','allfirm2','suma'));
+                return View('project.day',compact('all','user','today','all2','allfirm','allfirm2','suma','suma10'));
             }
             public function show2($id, UserRepository $userRepo, TaskRepository $taskRepo, FirmRepository $firmRepo)
             {
@@ -385,7 +426,7 @@ class ProjectController extends Controller
                 $variable=$today3;
                         session()->put('variable0', $variable0);
                         session()->put('variable', $variable);
-                $all=Project::join('users','projects.user_id','=','users.id')
+                $all=Project::join('users','projects.user_id','=','users.id')->join('firms','projects.firm_id','=','firms.id')
                 ->select("users.*", "projects.*", DB::raw("sec_to_time (sum(time_to_sec(`time`))) as czas"))
                 ->when($today2, function ($all, $today2) {
                     return $all->where('date', '>=', $today2);
@@ -394,10 +435,12 @@ class ProjectController extends Controller
                ->when($today3, function ($all, $today3) {
                 return $all->where('date', '<=', $today3);
             })
+                 ->where("users.permissions", "!=", "Nieaktywny")
                 ->groupBy('user_id')
+                ->orderBy('users.surname', "asc")
                 ->get();
 
-                $user1=Project::join('users','projects.user_id','=','users.id')
+                $user1=Project::join('users','projects.user_id','=','users.id')->join('firms','projects.firm_id','=','firms.id')
                 ->select("projects.user_id")
                 ->when($today2, function ($user1, $today2) {
                     return $user1->where('date', '>=', $today2);
@@ -406,18 +449,25 @@ class ProjectController extends Controller
                ->when($today3, function ($user1, $today3) {
                 return $user1->where('date', '<=', $today3);
             })
+            ->where("users.permissions", "!=", "Nieaktywny")
+            ->where("firms.status", "!=", "Nieaktywny")
+
                 ->groupBy("user_id")
+                ->orderBy('users.surname', "asc")
                 ->get();
 
-                $all2=Project::join('users','projects.user_id','=','users.id')
+                $all2=Project::join('users','projects.user_id','=','users.id')->join('firms','projects.firm_id','=','firms.id')
                 ->select("users.*", "projects.*")
+                ->where("users.permissions", "!=", "Nieaktywny")
+                ->where("firms.status", "!=", "Nieaktywny")
+
                 ->whereNotIn('projects.user_id', $user1)
                 ->groupBy('user_id')
                 ->orderBy('users.surname', "asc")
                 ->get();
 
                 
-                $firm1=Project::join('firms','projects.firm_id','=','firms.id')
+                $firm1=Project::join('firms','projects.firm_id','=','firms.id')->join('users','projects.user_id','=','users.id')
                 ->select("projects.firm_id")
                 ->when($today2, function ($firm1, $today2) {
                     return $firm1->where('date', '>=', $today2);
@@ -426,12 +476,16 @@ class ProjectController extends Controller
                ->when($today3, function ($firm1, $today3) {
                 return $firm1->where('date', '<=', $today3);
             })
+            ->where("users.permissions", "!=", "Nieaktywny")
+            ->where("firms.status", "!=", "Nieaktywny")
                 ->groupBy("firm_id")
                 ->orderBy('firms.name', "asc")
                 ->get();
 
-                $allfirm2=Project::join('firms','projects.firm_id','=','firms.id')
+                $allfirm2=Project::join('firms','projects.firm_id','=','firms.id')->join('users','projects.user_id','=','users.id')
                 ->select("firms.*", "projects.*")
+                ->where("users.permissions", "!=", "Nieaktywny")
+                ->where("firms.status", "!=", "Nieaktywny")
                 ->whereNotIn('projects.firm_id', $firm1)
                 ->groupBy('firm_id')
                 ->orderBy('firms.name', "asc")
@@ -439,7 +493,7 @@ class ProjectController extends Controller
 
             
 
-                $allfirm=Project::join('firms','projects.firm_id','=','firms.id')
+                $allfirm=Project::join('firms','projects.firm_id','=','firms.id')->join('users','projects.user_id','=','users.id')
                 ->select("firms.*", "projects.*", DB::raw("sec_to_time (sum(time_to_sec(`time`))) as czas2"))
                 ->when($today2, function ($allfirm, $today2) {
                     return $allfirm->where('date', '>=', $today2);
@@ -448,10 +502,15 @@ class ProjectController extends Controller
                ->when($today3, function ($allfirm, $today3) {
                 return $allfirm->where('date', '<=', $today3);
             })
+           
+            ->where("firms.status", "!=", "Nieaktywny")
                 ->groupBy('firm_id')
+                ->orderBy('firms.name', "asc")
                 ->get();
 
                 $suma=DB::table("projects")
+                ->join('users','projects.user_id','=','users.id')
+                ->join('firms','projects.firm_id','=','firms.id')
                 ->select(DB::raw("sec_to_time (sum(time_to_sec(`time`))) as czas3"))
                 ->when($today2, function ($suma, $today2) {
                     return $suma->where('date', '>=', $today2);
@@ -460,12 +519,32 @@ class ProjectController extends Controller
                ->when($today3, function ($suma, $today3) {
                 return $suma->where('date', '<=', $today3);
             })
+            ->where("users.permissions", "!=", "Nieaktywny")
+            
+         
                 ->get();
+                $suma10=DB::table("projects")
+                ->join('users','projects.user_id','=','users.id')
+                ->join('firms','projects.firm_id','=','firms.id')
+                ->select(DB::raw("sec_to_time (sum(time_to_sec(`time`))) as czas3"))
+                ->when($today2, function ($suma, $today2) {
+                    return $suma->where('date', '>=', $today2);
+                })
+               // ->where('date', '<=', $end_date)
+               ->when($today3, function ($suma, $today3) {
+                return $suma->where('date', '<=', $today3);
+            })
+         
+            ->where("firms.status", "!=", "Nieaktywny")
+            
+         
+                ->get();
+            
                 $user = $userRepo->getAllUsers();
                 $firm = $firmRepo->getAllFirms();
 
                $user = $userRepo->getAllUsers();
-                        return View('project.period',compact('all','user', 'today','all2','firm','allfirm','allfirm2','suma','today2','today3'));
+                        return View('project.period',compact('all','user', 'today','all2','firm','allfirm','allfirm2','suma','today2','today3','suma10'));
                     }
                     public function searchperiod(Request $request, UserRepository $userRepo, FirmRepository $firmRepo){
         
@@ -478,7 +557,7 @@ class ProjectController extends Controller
                         $today2=$request->input('start_date');
                         $today3=$request->input('end_date');
 
-                        $user1=Project::join('users','projects.user_id','=','users.id')
+                        $user1=Project::join('users','projects.user_id','=','users.id')->join('firms','projects.firm_id','=','firms.id')
                         ->select("projects.user_id")
                         ->when($start_date, function ($user1, $start_date) {
                             return $user1->where('date', '>=', $start_date);
@@ -487,12 +566,16 @@ class ProjectController extends Controller
                        ->when($end_date, function ($user1, $end_date) {
                         return $user1->where('date', '<=', $end_date);
                     })
+                        ->where("users.permissions", "!=", "Nieaktywny")
+                        
                         ->groupBy("user_id")
                         ->orderBy('users.surname', "asc")
                         ->get();
         
-                        $all2=Project::join('users','projects.user_id','=','users.id')
+                        $all2=Project::join('users','projects.user_id','=','users.id')->join('firms','projects.firm_id','=','firms.id')
                         ->select("users.*", "projects.*")
+                        ->where("users.permissions", "!=", "Nieaktywny")
+                        
                         ->whereNotIn('projects.user_id', $user1)
                         ->groupBy('user_id')
                         ->orderBy('users.surname', "asc")
@@ -500,7 +583,7 @@ class ProjectController extends Controller
         
                     
         
-                        $all=Project::join('users','projects.user_id','=','users.id')
+                        $all=Project::join('users','projects.user_id','=','users.id')->join('firms','projects.firm_id','=','firms.id')
                         ->select("users.*", "projects.*", DB::raw("sec_to_time (sum(time_to_sec(`time`))) as czas"))
                         ->when($start_date, function ($all, $start_date) {
                             return $all->where('date', '>=', $start_date);
@@ -509,14 +592,17 @@ class ProjectController extends Controller
                        ->when($end_date, function ($all, $end_date) {
                         return $all->where('date', '<=', $end_date);
                     })
+                        ->where("users.permissions", "!=", "Nieaktywny")
+                        
                         ->groupBy('user_id')
+                        ->orderBy('users.surname', "asc")
                         ->get();
         
                         
         
         
         
-                        $firm1=Project::join('firms','projects.firm_id','=','firms.id')
+                        $firm1=Project::join('firms','projects.firm_id','=','firms.id')->join('users','projects.user_id','=','users.id')
                         ->select("projects.firm_id")
                         ->when($start_date, function ($all, $start_date) {
                             return $all->where('date', '>=', $start_date);
@@ -525,12 +611,17 @@ class ProjectController extends Controller
                        ->when($end_date, function ($firm1, $end_date) {
                         return $firm1->where('date', '<=', $end_date);
                     })
+                        ->where("users.permissions", "!=", "Nieaktywny")
+                        ->where("firms.status", "!=", "Nieaktywny")
+                        
                         ->groupBy("firm_id")
                         ->orderBy('firms.name', "asc")
                         ->get();
         
-                        $allfirm2=Project::join('firms','projects.firm_id','=','firms.id')
+                        $allfirm2=Project::join('firms','projects.firm_id','=','firms.id')->join('users','projects.user_id','=','users.id')
                         ->select("firms.*", "projects.*")
+                        ->where("users.permissions", "!=", "Nieaktywny")
+                        ->where("firms.status", "!=", "Nieaktywny")
                         ->whereNotIn('projects.firm_id', $firm1)
                         ->groupBy('firm_id')
                         ->orderBy('firms.name', "asc")
@@ -538,7 +629,7 @@ class ProjectController extends Controller
         
                     
         
-                        $allfirm=Project::join('firms','projects.firm_id','=','firms.id')
+                        $allfirm=Project::join('firms','projects.firm_id','=','firms.id')->join('users','projects.user_id','=','users.id')
                         ->select("firms.*", "projects.*", DB::raw("sec_to_time (sum(time_to_sec(`time`))) as czas2"))
                         ->when($start_date, function ($allfirm, $start_date) {
                             return $allfirm->where('date', '>=', $start_date);
@@ -547,13 +638,19 @@ class ProjectController extends Controller
                        ->when($end_date, function ($allfirm, $end_date) {
                         return $allfirm->where('date', '<=', $end_date);
                     })
+                        
+                        ->where("firms.status", "!=", "Nieaktywny")
+                        
                         ->groupBy('firm_id')
+                        ->orderBy('firms.name', "asc")
                         ->get();
         
                         $user = $userRepo->getAllUsers();
                         $firm = $firmRepo->getAllFirms();
         
                         $suma=DB::table("projects")
+                        ->join('users','projects.user_id','=','users.id')
+                        ->join('firms','projects.firm_id','=','firms.id')
                         ->select(DB::raw("sec_to_time (sum(time_to_sec(`time`))) as czas3"))
                         ->when($start_date, function ($suma, $start_date) {
                             return $suma->where('date', '>=', $start_date);
@@ -562,6 +659,23 @@ class ProjectController extends Controller
                        ->when($end_date, function ($suma, $end_date) {
                         return $suma->where('date', '<=', $end_date);
                     })
+                       ->where("users.permissions", "!=", "Nieaktywny")
+                       
+                        ->get();
+                        $suma10=DB::table("projects")
+                        ->join('users','projects.user_id','=','users.id')
+                        ->join('firms','projects.firm_id','=','firms.id')
+                        ->select(DB::raw("sec_to_time (sum(time_to_sec(`time`))) as czas3"))
+                        ->when($start_date, function ($suma, $start_date) {
+                            return $suma->where('date', '>=', $start_date);
+                        })
+                       // ->where('date', '<=', $end_date)
+                       ->when($end_date, function ($suma, $end_date) {
+                        return $suma->where('date', '<=', $end_date);
+                    })
+                       
+                       ->where("firms.status", "!=", "Nieaktywny")
+                       
                         ->get();
 
                         $variable0=$start_date;
@@ -569,7 +683,7 @@ class ProjectController extends Controller
                         session()->put('variable0', $variable0);
                         session()->put('variable', $variable);
                       
-                        return View('project.period',compact('all','user','today2','all2','allfirm','allfirm2','suma','today3'));
+                        return View('project.period',compact('all','user','today2','all2','allfirm','allfirm2','suma','today3','suma10'));
                     }
                     public function show4($id, UserRepository $userRepo, TaskRepository $taskRepo, FirmRepository $firmRepo)
                     {

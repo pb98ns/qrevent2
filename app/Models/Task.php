@@ -8,7 +8,7 @@ class Task extends Model
 {
   
     protected $fillable = [
-        'name',
+        'name','date'
         
     ];
     public $timestamps = false;

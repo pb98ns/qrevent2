@@ -53,6 +53,7 @@ public function store(Request $request)
     ]);
     $task = new Task;
     $task ->name=$request->input('name');
+    $task ->date=$request->input('date');
 
     $task ->save();
 
@@ -82,6 +83,7 @@ public function update(Request $request, $id)
     $task = Task::find($id);
    
     $task ->name=$request->get('name');
+    $task ->date=$request->get('date');
     $task ->save();
     return redirect()->action('TaskController@index');
 }

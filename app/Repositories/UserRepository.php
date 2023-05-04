@@ -18,6 +18,14 @@ class UserRepository extends BaseRepository{
     {
         return $this->model->orderBy('date', 'desc')->orderBy('surname', 'asc')->get();
     }
+    public function getAllUsersbeznieaktywnych()
+    {
+        return $this->model->where('permissions','!=','Nieaktywny')->orderBy('surname', 'asc')->get();
+    }
+    public function getAllUsersznieaktywnych()
+    {
+        return $this->model->where('permissions','=','Nieaktywny')->orderBy('surname', 'asc')->get();
+    }
    
 }
 ?>

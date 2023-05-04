@@ -16,8 +16,13 @@ class CreateFirmsTable extends Migration
         Schema::create('firms', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
+            $table->string('number')->nullable();
             $table->text('place')->nullable();
             $table->string('nip')->nullable();
+            $table->string('status')->default('Aktywny');
+            $table->string('kpir')->nullable();
+            $table->string('kh')->nullable();
+            $table->string('placezus')->nullable();
         });
     }
 

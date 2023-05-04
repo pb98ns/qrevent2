@@ -18,7 +18,12 @@ class CreateVacationsTable extends Migration
             $table->biginteger('user_id')->unsigned();
             $table->date('vacation_date');
             $table->string('type_vacation');
+            $table->float('size');
+            $table->string('status1')->nullable();
+            $table->biginteger('user_id2')->unsigned()->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id2')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
+
         });
     }
 

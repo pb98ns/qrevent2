@@ -1,6 +1,26 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+
+            html, body{
+                background-color: #fff;
+                color: #636b6f;
+                font-family: 'Raleway';
+                font-weight: 100;
+                height: 80vh;
+                margin: 0;
+            }
+</style>
+<style>
+            .card-header
+            {
+                background-color: #fff;
+                color: #636b6f;
+                font-family: 'Raleway';
+                font-weight: 100;
+            }
+        </style>
 
 <div class="container">
 <div class="row justify-content-center">

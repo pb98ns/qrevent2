@@ -101,10 +101,10 @@ $today = date('Y-m-d');
 @if($projects->type_vacation === "CH")
     <tr>
 
-    <td class="table-danger table-row">{{$projects->user->surname}} {{$projects->user->name}}</td>  
+    <td class="table-danger">{{$projects->user->surname}} {{$projects->user->name}}</td>  
 
 
-<td class="table-danger table-row">CH</td>  
+<td class="table-danger">CH</td>  
 </tr>
 @endif
     @endforeach
@@ -177,7 +177,7 @@ $today = date('Y-m-d');
             <br> {{$today2}} - {{$today3}}
             </div> </h3>
                  </center>
-                 <div class="form-group col-md-6"  style="margin-top: 30px;">
+                 <div class="form-group"  style="margin-top: 30px;">
     <div class="row justify-content-center">
     <div class="form-row">              
 <table class="table" id="vacuwTable">
@@ -219,10 +219,10 @@ $today = date('Y-m-d');
             <br> {{$today2}} - {{$today3}}
             </div> </h3>
                  </center>
-                 <div class="form-group col-md-6"  style="margin-top: 30px;">
+                 <div class="form-group"  style="margin-top: 30px;">
     <div class="row justify-content-center">
     <div class="form-row">                          
-<table class="table">
+<table class="table" id="vacchTable">
   <thead>
     <tr>
       
@@ -309,7 +309,7 @@ cursor:pointer;
       "language": {
       infoEmpty:"",
       info: "",
-      emptyTable: "Brak zdefiniowanych urlopów wypoczynkowych za okres {{$today2}}-{{$today3}}",
+      emptyTable: "Brak zdefiniowanych urlopów wypoczynkowych za okres {{$today2}} - {{$today3}}",
       search: "Szukaj:" ,
     
       "paginate": {
@@ -337,7 +337,7 @@ cursor:pointer;
       "language": {
       infoEmpty:"",
       info: "",
-      emptyTable: "Brak zdefiniowanych urlopów chorobowych za okres {{$today2}}-{{$today3}}",
+      emptyTable: "Brak zdefiniowanych urlopów chorobowych za okres {{$today2}} - {{$today3}}",
       search: "Szukaj:" ,
     
       "paginate": {

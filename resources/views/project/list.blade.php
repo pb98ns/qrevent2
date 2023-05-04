@@ -7,10 +7,11 @@
 <div class="container">
 
     <div class="row justify-content-center">
-      
-  <center>
+
+ <center>
  <h3>    <div class="card-header">{{ __('Lista raportów') }}</div> </h3>
  </center>
+
 
 <div class="col-md-12">
 
@@ -128,15 +129,15 @@ value="{{$klient->id}}">
 
 <div class="form-group col-md-4">
 <label for="date"><b>Czas:</b></label>
-@if(!empty($all10))
+@if (!empty($all10))
 @foreach($all10 as $projects) 
 
 <h4> <div class="input-group">
 {{ $projects->czas10 }}
 </div> </h4>
 @endforeach
-
 @endif
+
 </div>
 
 
@@ -157,6 +158,7 @@ value="{{$klient->id}}">
  </div>
 </div>
 
+@if(!empty($all))
 <table class="table" id="myTable" data-show-footer="true">
   <thead>
     <tr>
@@ -197,7 +199,7 @@ value="{{$klient->id}}">
     @endforeach
 </tbody>
 </table>
-
+@endif
     
 
 <script>

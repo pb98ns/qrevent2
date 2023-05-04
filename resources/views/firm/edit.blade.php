@@ -67,9 +67,75 @@
                         </div>
 
 
+                        <div class="form-group row">
+<label for="status" class="col-md-4 col-form-label text-md-right"><b>{{ __('Status:') }}</b></label>
+<div class="col-md-6">
+
+@if($firm->status == 'Aktywny')
+<input type="radio" name="status" value="Aktywny"  checked> Aktywny <br/>
+<input type="radio" name="status" value="Nieaktywny"> Nieaktywny <br/>
+@endif
+@if($firm->status == 'Nieaktywny')
+<input type="radio" name="status" value="Aktywny"> Aktywny <br/>
+<input type="radio" name="status" value="Nieaktywny" checked> Nieaktywny <br/>
+@endif
 
 
-                  
+ @error('status')
+<span class="invalid-feedback" role="alert">
+<strong>{{ $message }}</strong>
+</span>
+@enderror
+</div>
+</div>
+
+<div class="form-group row">
+<label for="kpir" class="col-md-4 col-form-label text-md-right"><b>{{ __('KPiR:') }}</b></label>
+<div class="col-md-6">
+@if($firm->kpir == 'KPIR')
+<input class="form-check-input" name="kpir" type="checkbox" value="KPIR" id="flexCheckDefault" checked/>
+@else
+<input class="form-check-input" name="kpir" type="checkbox" value="KPIR" id="flexCheckDefault" />
+
+@endif
+</div>
+</div>       
+
+<div class="form-group row">
+<label for="kh" class="col-md-4 col-form-label text-md-right"><b>{{ __('Księgi Handlowe:') }}</b></label>
+<div class="col-md-6">
+@if($firm->kh == 'KH')
+<input class="form-check-input" name="kh" type="checkbox" value="KH" id="flexCheckDefault2" checked/>
+@else
+<input class="form-check-input" name="kh" type="checkbox" value="KH" id="flexCheckDefault2" />
+
+@endif
+</div>
+</div>   
+
+<div class="form-group row">
+<label for="placezus" class="col-md-4 col-form-label text-md-right"><b>{{ __('Płace:') }}</b></label>
+<div class="col-md-6">
+@if($firm->placezus == 'PLACE')
+<input class="form-check-input" name="placezus" type="checkbox" value="PLACE" id="flexCheckDefault3" checked/>
+@else
+<input class="form-check-input" name="placezus" type="checkbox" value="PLACE" id="flexCheckDefault3" />
+
+@endif
+</div>
+</div> 
+
+<div class="form-group row">
+<label for="amortyzacja" class="col-md-4 col-form-label text-md-right"><b>{{ __('Amortyzacja:') }}</b></label>
+<div class="col-md-6">
+@if($firm->amortyzacja == 'AMORTYZACJA')
+<input class="form-check-input" name="amortyzacja" type="checkbox" value="AMORTYZACJA" id="flexCheckDefault4" checked/>
+@else
+<input class="form-check-input" name="amortyzacja" type="checkbox" value="AMORTYZACJA" id="flexCheckDefault4" />
+
+@endif
+</div>
+</div> 
 <br>
                         <div class="form-group row mb-0">
                         <div class = "form-group">

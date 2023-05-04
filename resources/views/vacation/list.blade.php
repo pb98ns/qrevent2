@@ -46,34 +46,6 @@ $today3 = date('Y-12-31');
 
 
 
-
-
-
-        <div class="form-group col-md-4">
-        <label for="system">System pracy:</label>
-
-        <div class="form-row">
-        <div class="form-check form-check-inline">
-  <input name="system"  type="radio" id="inlineCheckbox1" value="1" checked>
-  <label class="form-check-label" name="system" value="1" for="inlineCheckbox1">1 - 5</label>
-</div>
-<div class="form-check form-check-inline">
-  <input name="system"  type="radio" id="inlineCheckbox2" value="2">
-  <label class="form-check-label" name="system" value="2" for="inlineCheckbox2">1 - 6</label>
-</div>
-<div class="form-check form-check-inline">
-  <input name="system"  type="radio" id="inlineCheckbox3" value="3">
-  <label class="form-check-label" name="system" value="3" for="inlineCheckbox3">1 - 7</label>
-</div>
-                                @error('system')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            
-</div>
-</div>
-
 <div class="form-group col-md-4">
         <label for="type_vacation">Typ urlopu:</label>
 
@@ -99,6 +71,17 @@ $today3 = date('Y-12-31');
 </div>
 
 
+
+
+
+
+        
+<input name="system" id="radio1" type="radio" id="inlineCheckbox1" value="1" checked>
+ <style>
+#radio1 {
+    visibility: hidden;
+}
+  </style>
 </div>
 
 
@@ -124,7 +107,7 @@ $today3 = date('Y-12-31');
 
 
 
-<div class="form-group col-md-6"  style="margin-top: 30px;">
+<div class="form-group col-md-6"  style="margin-top: 60px;">
     <div class="row justify-content-center">
     <div class="form-row">
      <form action="{{action('VacationController@searchvacation')}}" method="POST" role="form">
@@ -151,7 +134,8 @@ $today3 = date('Y-12-31');
  </div>
 </form>
 </div>
-         
+</div>
+</div>     
                 <center>
             <h3>    <div class="card-header">{{ __('Zgłoszone dni urlopu wypoczynkowego') }} 
 

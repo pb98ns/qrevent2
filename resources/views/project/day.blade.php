@@ -139,7 +139,7 @@ $today = date('Y-m-d');
 
 </tr>
   @endforeach
-  @foreach($suma as $projects)
+  @foreach($suma10 as $projects)
   
   <td class="table-secondary"><b>SUMA</b></td> 
   <td class="table-secondary"><b>{{$projects->czas3 ? $projects->czas3 : '00:00:00'}}</b></td>

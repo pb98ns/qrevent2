@@ -15,16 +15,18 @@ class FirmController extends Controller
     public function __construct(){
         $this->middleware('auth');
     }
-    public function index(){
-        if(Auth::user()->permissions != 'Użytkownik' && Auth::user()->permissions != 'Administrator'){
+    public function index(FirmRepository $firmReponoactive){
+        if(Auth::user()->permissions != 'Administrator'){
             return redirect()->route('login');
         }
+        $firmactive = $firmReponoactive->getAllFirmsActive();
+        $firmnoactive = $firmReponoactive->getAllFirmsNoActive();
 $firms=Firm::orderBy('name', 'asc')->get(); 
 $totalfirms=Firm::orderBy('name', 'asc')->count(); 
-return View('firm.list',["firmlist"=>$firms], compact('totalfirms'));
+return View('firm.list',["firmlist"=>$firms], compact('totalfirms','firmactive','firmnoactive'));
 }
 public function index2(){
-    if(Auth::user()->permissions != 'Użytkownik' && Auth::user()->permissions != 'Administrator'){
+    if(Auth::user()->permissions != 'Administrator'){
         return redirect()->route('login');
     }
     $firms=Firm::orderBy('name', 'asc')->get(); 
@@ -33,7 +35,7 @@ return View('firm.list2',["firmlist"=>$firms], compact('totalfirms'));
 }
 public function dodaj_firm()
 {
-    if(Auth::user()->permissions != 'Użytkownik' && Auth::user()->permissions != 'Administrator'){
+    if(Auth::user()->permissions != 'Administrator'){
         return redirect()->route('login');
     }
     return view('firm.create');
@@ -41,18 +43,23 @@ public function dodaj_firm()
 
 public function store(Request $request)
 {
-    if(Auth::user()->permissions != 'Użytkownik' && Auth::user()->permissions != 'Administrator'){
+    if(Auth::user()->permissions != 'Administrator'){
         return redirect()->route('login');
     }
     $request->validate([
         'name' => ['required', 'string', 'max:255'],
         'place' => ['max:255'],
-        'nip' => ['max:12'],
+        'nip' => ['max:16'],
     ]);
     $firm = new Firm;
     $firm ->name=$request->input('name');
     $firm ->place=$request->input('place');
     $firm ->nip=$request->input('nip');
+    $firm ->status=$request->input('status');
+    $firm ->kpir=$request->input('kpir');
+    $firm ->kh=$request->input('kh');
+    $firm ->placezus=$request->input('placezus');
+    $firm ->amortyzacja=$request->input('amortyzacja');
     
     $firm ->save();
 
@@ -61,7 +68,7 @@ public function store(Request $request)
 }
 public function edit($id)
 {
-    if(Auth::user()->permissions != 'Użytkownik' && Auth::user()->permissions != 'Administrator'){
+    if(Auth::user()->permissions != 'Administrator'){
         return redirect()->route('login');
     }
 $firm = Firm::find($id);
@@ -69,14 +76,14 @@ return view('firm.edit', compact('firm', 'id'));
 }
 public function update(Request $request, $id)
 {
-    if(Auth::user()->permissions != 'Użytkownik' && Auth::user()->permissions != 'Administrator'){
+    if(Auth::user()->permissions != 'Administrator'){
         return redirect()->route('login');
     }
    
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'place' => ['max:255'],
-            'nip' => ['max:12'],
+            'nip' => ['max:16'],
         
     ]);
         
@@ -85,12 +92,17 @@ public function update(Request $request, $id)
     $firm ->name=$request->get('name');
     $firm ->place=$request->get('place');
     $firm ->nip=$request->get('nip');
+    $firm ->status=$request->input('status');
+    $firm ->kpir=$request->input('kpir');
+    $firm ->kh=$request->input('kh');
+    $firm ->placezus=$request->input('placezus');
+    $firm ->amortyzacja=$request->input('amortyzacja');
     $firm ->save();
     return redirect()->action('FirmController@index');
 }
 public function delete($id)
 {
-    if(Auth::user()->permissions != 'Użytkownik' && Auth::user()->permissions != 'Administrator'){
+    if(Auth::user()->permissions != 'Administrator'){
         return redirect()->route('login');
     }
     $firm = Firm::find($id);

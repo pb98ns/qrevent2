@@ -4,6 +4,27 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
 @endsection
 @section('content')
+<style>
+
+            html, body{
+                background-color: #fff;
+                color: #636b6f;
+                font-family: 'Raleway';
+                font-weight: 100;
+                height: 80vh;
+                margin: 0;
+            }
+</style>
+<style>
+            .card-header
+            {
+                background-color: #fff;
+                color: #636b6f;
+                font-family: 'Raleway';
+                font-weight: 100;
+            }
+        </style>
+
 <div class="container">
     <div class="row justify-content-center">
        
@@ -41,6 +62,7 @@
                                 @enderror
                             </div>
                         </div>
+                       
                         <div class="form-group row">
                             <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('Adres e-mail:') }}</label>
 
@@ -82,7 +104,7 @@
 
                             <div class="col-md-6">
                             <input type="radio" name="permissions" value="Administrator"> Administrator <br/>
-                            <input type="radio" name="permissions" value="Użytkownik" checked> Użytkownik <br/>
+                            <input type="radio" name="permissions" value="Pracownik" checked> Użytkownik <br/>
                                 @error('permissions')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -128,22 +150,50 @@
     </tr>
   </thead>
   <tbody>
-  @foreach($pracownicylist as $pracownicy) 
+  @foreach($useraktywny as $pracownicy) 
     <tr>
       
-      <td><b>{{ $loop->iteration }}. {{$pracownicy['surname']}} {{$pracownicy['name']}}</b></td>
+      <td class="table-success table-row"><b>{{ $loop->iteration }}. {{$pracownicy['surname']}} {{$pracownicy['name']}}</b></td>
       
-      <td>{{$pracownicy['email']}}</td>
+      <td class="table-success table-row">{{$pracownicy['email']}}</td>
      
-      <td>{{$pracownicy['permissions']}}</td>
+      <td class="table-success table-row">{{$pracownicy['permissions']}}</td>
   
 
-      <td><a href="{{URL::to('/home/users/edit/'.$pracownicy->id)}}" class="btn btn-primary a-btn-slide-text" title="Edytuj">
+      <td class="table-success table-row"><a href="{{URL::to('/home/users/edit/'.$pracownicy->id)}}" class="btn btn-primary a-btn-slide-text" title="Edytuj">
         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
         <span><strong></strong></span>            
     </a></td>
 
-    <td>
+    <td class="table-success table-row">
+      <form method = "post" class="delete_from" action="{{action('UserController@delete',$pracownicy['id'] )}}" title="Usuń">
+      {{csrf_field()}}
+      <input type = "hidden" name="_method" value="DELETE " />
+      <button type = "submit" class="btn btn-danger"><span class="bi bi-trash"></span></button>
+      </form>
+      </td> 
+
+
+
+    </tr>
+    @endforeach
+
+    @foreach($usernieaktywny as $pracownicy) 
+    <tr>
+      
+      <td class="table-danger table-row"><b>{{ $loop->iteration }}. {{$pracownicy['surname']}} {{$pracownicy['name']}}</b></td>
+      
+      <td class="table-danger table-row">{{$pracownicy['email']}}</td>
+     
+      <td class="table-danger table-row">{{$pracownicy['permissions']}}</td>
+  
+
+      <td class="table-danger table-row"><a href="{{URL::to('/home/users/edit/'.$pracownicy->id)}}" class="btn btn-primary a-btn-slide-text" title="Edytuj">
+        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+        <span><strong></strong></span>            
+    </a></td>
+
+    <td class="table-danger table-row">
       <form method = "post" class="delete_from" action="{{action('UserController@delete',$pracownicy['id'] )}}" title="Usuń">
       {{csrf_field()}}
       <input type = "hidden" name="_method" value="DELETE " />

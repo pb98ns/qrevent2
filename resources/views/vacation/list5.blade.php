@@ -44,7 +44,7 @@
   @foreach($vacations as $projects) 
     <tr>
 
-<td>{{$projects->user->surname}} {{$projects->user->name}} </td>   
+<td>{{ $loop->iteration }}. {{$projects->user->surname}} {{$projects->user->name}} </td>   
 <td>{{$projects->vacation_date}} ({{ \Carbon\Carbon::parse($projects->vacation_date)->translatedFormat('l') }})</td>  
 <td>{{$projects->type_vacation}}</td>  
 <td>

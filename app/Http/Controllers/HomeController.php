@@ -9,6 +9,8 @@ use App\Repositories\TaskRepository;
 use App\Project;
 use App\User;
 use App\Firm;
+use App\Models\Qrcode;
+use App\Models\Task;
 use DB;
 use Illuminate\Support\Facades\Auth;
 class HomeController extends Controller
@@ -28,109 +30,43 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index(UserRepository $userRepo, FirmRepository $firmRepo, TaskRepository $taskRepo)
+    public function index()
     {
-        $user = $userRepo->getAllUsers();
-        $firm = $firmRepo->getAllFirms();
-        $task = $taskRepo->getAllTasks();
-
-        $auth_user_id = Auth::id();
-        $today=date('Y-m-d');
-
-$showuserproject=Project::join('firms','projects.firm_id','=','firms.id')->join('users','projects.user_id','=','users.id')->join('tasks','projects.task_id','=','tasks.id')
-                ->select("firms.*", "projects.*", "users.*")
-                ->where("projects.date", "=",  $today)
-                ->where("projects.user_id", "=", $auth_user_id)
-                ->orderby('firms.name',"asc")
-                ->orderby('tasks.name',"asc")
-                ->get();
-
-                $showsum=Project::join('firms','projects.firm_id','=','firms.id')->join('users','projects.user_id','=','users.id')->join('tasks','projects.task_id','=','tasks.id')
-                ->select("firms.*", "projects.*", "users.*",DB::raw("sec_to_time (sum(time_to_sec(`time`))) as czas"))
-                ->where("projects.date", "=",  $today)
-                ->where("projects.user_id", "=", $auth_user_id)
-                ->orderby('firms.name',"asc")
-                ->orderby('tasks.name',"asc")
-                ->get();
-
-
-        return view('home', compact('user','firm','task','showuserproject','showsum','today'));
-    }
-    public function index2()
-    {
-        return view('index2');
-    }
-    public function store(Request $request)
-{
-    $auth_user_id = Auth::id();
-        $today=date('Y-m-d');
-    $showsum=Project::join('firms','projects.firm_id','=','firms.id')->join('users','projects.user_id','=','users.id')->join('tasks','projects.task_id','=','tasks.id')
-    ->select("firms.*", "projects.*", "users.*",DB::raw("sec_to_time (sum(time_to_sec(`time`))) as czas"))
-    ->where("projects.date", "=",  $today)
-    ->where("projects.user_id", "=", $auth_user_id)
-    ->orderby('firms.name',"asc")
-    ->orderby('tasks.name',"asc")
-    ->get();
-  
-    $request->validate([
-        'user_id'=> ['required'],
-        'firm_id' => ['required'],
-        'task_id' => ['required'],
-        'time' => ['required'],
-        'date' => ['required'],
-    
-       
-    ]);
-    
-    $project = new Project;
-    $project->user_id=$request->input('user_id');
-    $project->firm_id=$request->input('firm_id');
-    $project->task_id=$request->input('task_id');
-    $project->description=$request->input('description');
-    $project->time=$request->input('time');
-    $project->date=$request->input('date');
-
-    $project->save();
-    
-    return redirect()->action('HomeController@index');
-   
-}
-
-public function searchday2(Request $request, UserRepository $userRepo, FirmRepository $firmRepo, TaskRepository $taskRepo){
         
-    $start_date = $request->input('start_date');
-    $today=$request->input('start_date');
-    if(empty($start_date)){
-        $today = date('Y-m-d');
+        $qrcode = Qrcode::all();
+        return view ('home')->with('qrcode', $qrcode);
     }
     
-   
-    $user = $userRepo->getAllUsers();
-    $firm = $firmRepo->getAllFirms();
-    $task = $taskRepo->getAllTasks();
 
-    $auth_user_id = Auth::id();
-  
-
-$showuserproject=Project::join('firms','projects.firm_id','=','firms.id')->join('users','projects.user_id','=','users.id')->join('tasks','projects.task_id','=','tasks.id')
-            ->select("firms.*", "projects.*", "users.*")
-            ->where("projects.date", "=",  $today)
-            ->where("projects.user_id", "=", $auth_user_id)
-            ->orderby('firms.name',"asc")
-            ->orderby('tasks.name',"asc")
-            ->get();
-
-            $showsum=Project::join('firms','projects.firm_id','=','firms.id')->join('users','projects.user_id','=','users.id')->join('tasks','projects.task_id','=','tasks.id')
-            ->select("firms.*", "projects.*", "users.*",DB::raw("sec_to_time (sum(time_to_sec(`time`))) as czas"))
-            ->where("projects.date", "=",  $today)
-            ->where("projects.user_id", "=", $auth_user_id)
-            ->orderby('firms.name',"asc")
-            ->orderby('tasks.name',"asc")
-            ->get();
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'max:255'],
+            'description' => ['required','max:255'],
+            'image' => ['required','max:20480'],
+        
+    ]);
+        $qrcode = new Qrcode;
+        $qrcode->name=$request->input('name');
+        $qrcode->description=$request->input('description');
+        if($request->hasfile('image'))
+        {
+            $file=$request->file('image');
+            $extention = $file->getClientOriginalExtension();
+            date_default_timezone_set('Europe/Warsaw');
+            $date = now()->format("YmdHis");
+            $filename = $date.'.'.$extention;
+            $file->move('uploads/kb/',$filename);
+             $qrcode->image=$filename;
 
 
-    return view('home', compact('user','firm','task','showuserproject','showsum','today'));
-    
-  
+        }
+        $qrcode->task_id=1;
+        $qrcode->user_id=1;
+
+$qrcode->save();
+return redirect('/test')->with('message', 'Wiadomość została pomyślnie dodana!');
+
+    }
 }
-}
+
